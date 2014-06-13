@@ -7,8 +7,8 @@ ARGS = -Wall
 $(EXE): $(OBJS) 
 	$(GCC) $(ARGS) -o $(EXE) $(OBJS) $(LIBS)
 
-cgdaltext.o: cgdaltext.c
-	$(GCC) $(ARGS) -c cgdaltest.c
+cgdaltest.o: cgdaltest.cpp
+	$(GCC) $(ARGS) -c cgdaltest.cpp
 
 clean:
 	rm -f $(EXE) $(OBJS)
