@@ -14,5 +14,6 @@ def count_features():
 	n = 0
 	for feat in lyr:
 		n=n+1
+        fieldcount = feat.GetGeomFieldCount()
 
 	print "Found " + str(n) + " features"
