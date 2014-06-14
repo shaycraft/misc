@@ -16,4 +16,6 @@ def count_features():
 		n=n+1
         fieldcount = feat.GetGeomFieldCount()
 
+	print "fieldcount = " + str(fieldcount)
+
 	print "Found " + str(n) + " features"
