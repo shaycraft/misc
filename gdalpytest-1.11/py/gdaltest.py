@@ -1,6 +1,7 @@
 import sys
 import ogr
 
+
 def count_features(filename):
     ds = ogr.Open(filename)
 
