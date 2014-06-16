@@ -1,8 +1,8 @@
 import sys
 import ogr
 
-def count_features():
-    ds = ogr.Open("../WELLS.SHP")
+def count_features(filename):
+    ds = ogr.Open(filename)
 
     if ds is None:
         print "Open failed.\n"
