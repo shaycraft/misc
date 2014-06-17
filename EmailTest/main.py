@@ -14,7 +14,7 @@ to_addr = "phreakdawg@gmail.com"
 msg = ""
 for line in sys.stdin:
     msg = msg + line
-msg = MIMEText(msg)
+msg = MIMEText(msg, 'html')
 
 #msg =  MIMEText(sys.stdin.readlines())
 
@@ -24,8 +24,8 @@ msg['To'] = str(to_addr)
 
 s = smtplib.SMTP('linuxserver1.tcolandservices.com')
 
-print msg.as_string()
+#print msg.as_string()
 
 s.sendmail('shaycraft@tcolandservices.com', 'phreakdawg@gmail.com', msg.as_string())
 
-print "Email sent"
+#print "Email sent"
