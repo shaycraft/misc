@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>New Web Project</title>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript">
+        	$(document).ready(function() {
+        		var api_key = encodeURI('EG256Euv4bVpbcAx6F8QjiCQ3');
+        		var secret_key = 'p19nAu1GmoyJX2EGeN5DRAk4yJ9jDeFZOiqpsL4gWCbp0JEykv';
+        		var strReq = api_key + ':' + secret_key;
+        		console.log('api key = ' + api_key);
+        		console.log(strReq);
+        		var base64str = btoa(strReq);
+        		console.log(base64str);
+        		
+        		// NEXT TODO:  formulate ajax request
+        	});
+        </script>
+    </head>
+    <body>
+        <h1>New Web Project Page</h1>
+    </body>
+</html>
