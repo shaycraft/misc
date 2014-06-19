@@ -38,14 +38,56 @@ def get_token():
     return json.loads(response)['access_token']
 
 
+def get_recursively(search_dict, field):
+    """Takes a dict with nested lists and dicts,
+    and searches all dicts for a key of the field
+    provided.
+    """
+    fields_found = []
+
+    for key, value in search_dict:
+
+        if key == field:
+            fields_found.append(value)
+
+        elif isinstance(value, dict):
+            results = get_recursively(value, field)
+            for result in results:
+                fields_found.append(result)
+
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    more_results = get_recursively(item, field)
+                    for another_result in more_results:
+                        fields_found.append(another_result)
+
+    return fields_found
+
 def get_media(username, twit_token):
     svc_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name={0}&count=200'.format(username)
     svc_headers = {'Authorization': 'Bearer {0}'.format(twit_token)}
     r = requests.get(svc_url, headers=svc_headers)
     twit_feed = json.loads(r.text)
 
+    print type(twit_feed)
+
+    #print get_recursively(twit_feed,'media_url')
+
     for item in twit_feed:
-        print item
+        for entry in item:
+            #print entry
+            if entry == 'entities':
+                print type(entry)
+                for entities in item[entry]:
+                    #print entities
+                    if entities == 'media':
+                        print type(entities)
+                        print item[entry][entities]
+                        print 'found media url'
+
+    #for property,value in vars(twit_feed).iteritems():
+    #    print property
 
 token = get_token()
 get_media('MissJessicaAsh', token)
