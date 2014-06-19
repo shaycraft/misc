@@ -1,3 +1,10 @@
+<!--
+    TODO:  This won't work because of cross-domain requests.  We need to do it server-side it looks like.  Probably in
+    python or php.  Also note that the following curl command works fine:
+
+    curl -H "Authorization: Basic RUcyNTZFdXY0YlZwYmNBeDZGOFFqaUNRMzpwMTluQXUxR21veUpYMkVHZU41RFJBazR5SjlqRGVGWk9pcXBzTDRnV0NicDBKRXlrdg==" -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=client_credentials" https://api.twitter.com/oauth2/token -v
+
+-->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -10,16 +17,45 @@
         		var api_key = encodeURI('EG256Euv4bVpbcAx6F8QjiCQ3');
         		var secret_key = 'p19nAu1GmoyJX2EGeN5DRAk4yJ9jDeFZOiqpsL4gWCbp0JEykv';
         		var strReq = api_key + ':' + secret_key;
-        		console.log('api key = ' + api_key);
-        		console.log(strReq);
+        		//console.log('api key = ' + api_key);
+        		//console.log(strReq);
         		var base64str = btoa(strReq);
         		console.log(base64str);
         		
         		// NEXT TODO:  formulate ajax request
+
+        		var oauthurl = 'https://api.twitter.com/oauth2/token';
+        		var oAuthHeaders = {
+        		    'Authorization': 'Base ' + base64str,
+        		    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        		}
+
+        		console.log(oAuthHeaders);
+
+        		$.ajax({
+        		    url: oauthurl,
+        		    type: 'POST',
+        		    data: 'grant_type=client_credentials',
+        		    headers: {'crappy': 'crap1','crappy2':'yessir'},
+        		    crossDomain: true,
+        		    success: function(data){
+        		        console.log('calling success');
+        		        console.log (data);
+        		    },
+        		    error: function(msg){
+        		        console.log('calling error');
+        		        console.log(msg);
+        		    },
+        		    complete: function(jqXHR,textStatus) {
+        		        console.log('calling complete');
+        		        console.log(jqXHR);
+        		    }
+        		});
         	});
         </script>
     </head>
     <body>
-        <h1>New Web Project Page</h1>
+        <h1>Twitter API Test</h1>
+        <span id ="lblDebug" style="color: Red;"></span>
     </body>
 </html>
