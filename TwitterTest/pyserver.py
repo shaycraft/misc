@@ -38,12 +38,22 @@ def get_token():
     return json.loads(response)['access_token']
 
 
-print get_token()
+def get_media(username, twit_token):
+    svc_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name={0}&count=200'.format(username)
+    svc_headers = {'Authorization': 'Bearer {0}'.format(twit_token)}
+    r = requests.get(svc_url, headers=svc_headers)
+    twit_feed = json.loads(r.text)
+
+    for item in twit_feed:
+        print item
+
+token = get_token()
+get_media('MissJessicaAsh', token)
 
 try:
     htmlheader()
 
-    print '<h2>blah you suck</h2>'
+    print '<h2>Your access token is {0}/h2>'.format(token)
     htmlfooter()
 except:
     cgi.print_exception()
