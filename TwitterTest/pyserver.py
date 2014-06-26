@@ -14,6 +14,12 @@ def htmlheader():
     print '<html>'
     print '<head lang="en">'
     print '<meta charset="utf-8"/>'
+    print '<style type="text/css">'
+    print '.floated_img'
+    print '{'
+    print ' float: left;'
+    print '}'
+    print '</style>'
     print '</head>'
     print '<body>'
 
@@ -64,13 +70,20 @@ def get_recursively(search_dict, field):
 
     return fields_found
 
+
+def render_img(media_url):
+    print '<div class="floated_img">'
+    print '<a href="{0}">'.format(media_url)
+    print '<img class="floated_img" src="{0}" alt="twit" height="150" width="150"></a>'.format(media_url)
+    print '</div>'
+
 def get_media(username, twit_token):
     svc_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name={0}&count=200'.format(username)
     svc_headers = {'Authorization': 'Bearer {0}'.format(twit_token)}
     r = requests.get(svc_url, headers=svc_headers)
     twit_feed = json.loads(r.text)
 
-    print type(twit_feed)
+    #print type(twit_feed)
 
     #print get_recursively(twit_feed,'media_url')
 
@@ -78,24 +91,31 @@ def get_media(username, twit_token):
         for entry in item:
             #print entry
             if entry == 'entities':
-                print type(entry)
+                #print type(entry)
                 for entities in item[entry]:
                     #print entities
                     if entities == 'media':
-                        print type(entities)
-                        print item[entry][entities]
-                        print 'found media url'
+                        #print type(entities)
+                        #print item[entry][entities]
+                        twit_med = item[entry][entities][0]
+                        media_url = twit_med['media_url']
+                        #print twit_med['sizes']['thumb']
+                        h = 150
+                        w = 150
+                        render_img(media_url)
 
     #for property,value in vars(twit_feed).iteritems():
     #    print property
 
-token = get_token()
-get_media('MissJessicaAsh', token)
-
 try:
     htmlheader()
 
+    token = get_token()
+
     print '<h2>Your access token is {0}/h2>'.format(token)
+
+    get_media('MissJessicaAsh', token)
+
     htmlfooter()
 except:
     cgi.print_exception()
