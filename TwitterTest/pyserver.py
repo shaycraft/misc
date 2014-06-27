@@ -73,7 +73,7 @@ def get_recursively(search_dict, field):
 
 def render_img(media_url):
     print '<div class="floated_img">'
-    print '<a href="{0}">'.format(media_url)
+    print '<a href="{0}:large">'.format(media_url)
     print '<img class="floated_img" src="{0}" alt="twit" height="150" width="150"></a>'.format(media_url)
     print '</div>'
 
@@ -118,7 +118,7 @@ try:
     #cgi.MiniFieldStorage("max_id");
 
     # Get data from fields
-    last_id = form.getvalue('last_id')
+    last_id = form['max_id'].value
 
     #print 'last_id = '
     #print last_id
@@ -131,7 +131,7 @@ try:
 
     last_id = get_media('MissJessicaAsh', token, last_id)
 
-    print '<a href=".?max_id={0}">Next</a>'.format(last_id)
+    print '<a href="pyserver.py?max_id={0}">Next</a>'.format(last_id)
 
     htmlfooter()
 except:
