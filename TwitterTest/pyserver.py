@@ -77,8 +77,11 @@ def render_img(media_url):
     print '<img class="floated_img" src="{0}" alt="twit" height="150" width="150"></a>'.format(media_url)
     print '</div>'
 
-def get_media(username, twit_token):
-    svc_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name={0}&count=200&exclude_replies=true&max_id=466619951282151424 '.format(username)
+def get_media(username, twit_token, last_id):
+
+    svc_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name={0}&count=200&exclude_replies=true '.format(username)
+    if last_id is not None:
+        svc_url += '&max_id={0}'.format(last_id)
     svc_headers = {'Authorization': 'Bearer {0}'.format(twit_token)}
     r = requests.get(svc_url, headers=svc_headers)
     twit_feed = json.loads(r.text)
@@ -86,7 +89,7 @@ def get_media(username, twit_token):
     #print type(twit_feed)
 
     #print get_recursively(twit_feed,'media_url')
-
+    last_id = 1
     for item in twit_feed:
         for entry in item:
             #print entry
@@ -103,19 +106,32 @@ def get_media(username, twit_token):
                         h = 150
                         w = 150
                         render_img(media_url)
-                        print twit_med['id']
+                        #print twit_med['id']
+                        last_id = twit_med['id']
 
     #for property,value in vars(twit_feed).iteritems():
     #    print property
+    return last_id
 
 try:
+    form = cgi.FieldStorage()
+    #cgi.MiniFieldStorage("max_id");
+
+    # Get data from fields
+    last_id = form.getvalue('last_id')
+
+    #print 'last_id = '
+    #print last_id
+
     htmlheader()
 
     token = get_token()
 
     print '<h2>Your access token is {0}/h2>'.format(token)
 
-    get_media('MissJessicaAsh', token)
+    last_id = get_media('MissJessicaAsh', token, last_id)
+
+    print '<a href=".?max_id={0}">Next</a>'.format(last_id)
 
     htmlfooter()
 except:
