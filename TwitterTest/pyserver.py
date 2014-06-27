@@ -132,7 +132,8 @@ try:
 
     #print '<h2>Your access token is {0}/h2>'.format(token)
 
-    last_id = get_media('MissJessicaAsh', token, last_id)
+    for x in range(1,4):
+        last_id = get_media('MissJessicaAsh', token, last_id)
 
     print '<a href="pyserver.py?max_id={0}">Next</a>'.format(last_id)
 
