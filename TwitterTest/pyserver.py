@@ -118,7 +118,10 @@ try:
     #cgi.MiniFieldStorage("max_id");
 
     # Get data from fields
-    last_id = form['max_id'].value
+    if 'max_id' in form:
+    	last_id = form['max_id'].value
+    else:
+        last_id = None
 
     #print 'last_id = '
     #print last_id
@@ -127,7 +130,7 @@ try:
 
     token = get_token()
 
-    print '<h2>Your access token is {0}/h2>'.format(token)
+    #print '<h2>Your access token is {0}/h2>'.format(token)
 
     last_id = get_media('MissJessicaAsh', token, last_id)
 
