@@ -123,6 +123,12 @@ try:
     else:
         last_id = None
 
+    twit_name = ''
+    if 'twit_name' in form:
+        twit_name = form['twit_name'].value
+    else:
+        raise Exception('ERROR:  Need to specify a username!')
+
     #print 'last_id = '
     #print last_id
 
