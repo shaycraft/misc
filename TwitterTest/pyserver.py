@@ -139,9 +139,9 @@ try:
     #print '<h2>Your access token is {0}/h2>'.format(token)
 
     for x in range(1,4):
-        last_id = get_media('MissJessicaAsh', token, last_id)
+        last_id = get_media(twit_name, token, last_id)
 
-    print '<a href="pyserver.py?max_id={0}">Next</a>'.format(last_id)
+    print '<a href="pyserver.py?max_id={0}&twit_name={1}">Next</a>'.format(last_id, twit_name)
 
     htmlfooter()
 except:
