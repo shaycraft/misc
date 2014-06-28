@@ -3,3 +3,4 @@
 *.exe
 *.exe.*
 LibJpegTest/LibJpegTest/Debug/*
+*.o
