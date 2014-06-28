@@ -1,1 +1,5 @@
 .idea
+/LibJpegTest/Debug
+/LibJpegTest/LibJpegTest/Debug
+*.exe
+*.opensdf
