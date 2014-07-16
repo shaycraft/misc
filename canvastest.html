@@ -1,0 +1,29 @@
+<html>
+<head>
+	<title>Html5 Canvas test</title>
+	<script type="text/javascript">
+		var x = 0,y = 0;
+		var step = 1;
+		var c;
+		var ctx;
+
+		window.onload = function() {
+		 	c= document.getElementById("canvas");
+			console.log(c);
+			ctx = c.getContext("2d");
+		}
+
+		setInterval(function() {
+			console.log('x = ' + x + ', y = ' + y);
+			ctx.fillStyle = "#FF0000";
+			ctx.fillRect(x,y,5,5);
+			x = x + step;
+			y = y+ step;
+			//console.log('I drew that shit');
+		}, 100);
+	</script>
+</head>
+<body>
+	<canvas id="canvas" style="width:1200; height=200; border: 1px solid;" />
+</body>
+</html>
