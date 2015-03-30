@@ -113,7 +113,6 @@ def handler(req):
     twit_name = ''
     max_id = None
 
-    req.write(req.args)    
     getreqstr = req.args
     getreqarr = getreqstr.split('&')
     getreqdict = {}
