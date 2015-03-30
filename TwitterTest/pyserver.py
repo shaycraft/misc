@@ -10,7 +10,7 @@ from mod_python import apache
 
 
 def htmlheader(req):
-    #req.write('Content-type: text/html\n\n')
+    # req.write('Content-type: text/html\n\n')
     req.content_type = 'text/html'
     req.write('<!DOCTYPE HTML>')
     req.write('<html>')
@@ -73,13 +73,14 @@ def get_recursively(search_dict, field):
     return fields_found
 
 
-def render_img(media_url):
-    print '<div class="floated_img">'
-    print '<a href="{0}:large">'.format(media_url)
-    print '<img class="floated_img" src="{0}" alt="twit" height="150" width="150"></a>'.format(media_url)
-    print '</div>'
+def render_img(req, media_url):
+    req.write('<div class="floated_img">')
+    req.write('<a href="{0}:large">'.format(media_url))
+    req.write('<img class="floated_img" src="{0}" alt="twit" height="150" width="150"></a>'.format(media_url))
+    req.write('</div>')
 
-def get_media(username, twit_token, last_id):
+
+def get_media(req, username, twit_token, last_id):
 
     svc_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name={0}&count=200&exclude_replies=true '.format(username)
     if last_id is not None:
@@ -100,7 +101,7 @@ def get_media(username, twit_token, last_id):
 
                         h = 150
                         w = 150
-                        render_img(media_url)
+                        render_img(req, media_url)
                         last_id = twit_med['id']
 
     return last_id
@@ -113,30 +114,24 @@ def handler(req):
     max_id = None
 
     req.write(req.args)    
-    getReqStr = req.args
-    getReqArr = getReqStr.split('&')
-    getReqDict = {}
+    getreqstr = req.args
+    getreqarr = getreqstr.split('&')
+    getreqdict = {}
 
-    for item in getReqArr:
-        tempArr = item.split('=')            
-        getReqDict[tempArr[0]] = tempArr[1]
+    for item in getreqarr:
+        temparr = item.split('=')
+        getreqdict[temparr[0]] = temparr[1]
 
-    twit_name = getReqDict['twit_name']
-    max_id = getReqDict.get('maxid', None)
+    twit_name = getreqdict['twit_name']
+    max_id = getreqdict.get('max_id', None)
+    last_id = max_id
 
-    if max_id is None:
-        req.write('max id is none');
+    token = get_token()
 
-    req.write('<h1>twit_name={0}</h1>'.format(twit_name))
+    for x in range(1, 4):
+        last_id = get_media(req, twit_name, token, last_id)
 
-
-
-    #token = get_token()
-
-    #for x in range(1, 4):
-    #    last_id = get_media(twit_name, token, last_id)
-
-    #print '<a href="pyserver.py?max_id={0}&twit_name={1}">Next</a>'.format(last_id, twit_name)
+    req.write('<a href="pyserver.py?max_id={0}&twit_name={1}">Next</a>'.format(last_id, twit_name))
 
     htmlfooter(req)
     return apache.OK
