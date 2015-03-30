@@ -6,27 +6,29 @@ import urllib
 import requests
 import base64
 import json
+from mod_python import apache
 
 
-def htmlheader():
-    print 'Content-type: text/html\n\n'
-    print '<!DOCTYPE HTML>'
-    print '<html>'
-    print '<head lang="en">'
-    print '<meta charset="utf-8"/>'
-    print '<style type="text/css">'
-    print '.floated_img'
-    print '{'
-    print ' float: left;'
-    print '}'
-    print '</style>'
-    print '</head>'
-    print '<body>'
+def htmlheader(req):
+    #req.write('Content-type: text/html\n\n')
+    req.content_type = 'text/html'
+    req.write('<!DOCTYPE HTML>')
+    req.write('<html>')
+    req.write('<head lang="en">')
+    req.write('<meta charset="utf-8"/>')
+    req.write('<style type="text/css">')
+    req.write('.floated_img')
+    req.write('{')
+    req.write(' float: left;')
+    req.write('}')
+    req.write('</style>')
+    req.write('</head>')
+    req.write('<body>')
 
 
-def htmlfooter():
-    print '</body>'
-    print '</html>'
+def htmlfooter(req):
+    req.write('</body>')
+    req.write('</html>')
 
 
 def get_token():
@@ -86,63 +88,56 @@ def get_media(username, twit_token, last_id):
     r = requests.get(svc_url, headers=svc_headers)
     twit_feed = json.loads(r.text)
 
-    #print type(twit_feed)
-
-    #print get_recursively(twit_feed,'media_url')
     last_id = 1
     for item in twit_feed:
         for entry in item:
-            #print entry
             if entry == 'entities':
-                #print type(entry)
                 for entities in item[entry]:
-                    #print entities
                     if entities == 'media':
-                        #print type(entities)
-                        #print item[entry][entities]
+
                         twit_med = item[entry][entities][0]
                         media_url = twit_med['media_url']
-                        #print twit_med
+
                         h = 150
                         w = 150
                         render_img(media_url)
-                        #print twit_med['id']
                         last_id = twit_med['id']
 
-    #for property,value in vars(twit_feed).iteritems():
-    #    print property
     return last_id
 
-try:
-    form = cgi.FieldStorage()
-    #cgi.MiniFieldStorage("max_id");
 
-    # Get data from fields
-    if 'max_id' in form:
-    	last_id = form['max_id'].value
-    else:
-        last_id = None
+def handler(req):
+    htmlheader(req)
 
     twit_name = ''
-    if 'twit_name' in form:
-        twit_name = form['twit_name'].value
-    else:
-        raise Exception('ERROR:  Need to specify a username!')
+    max_id = None
 
-    #print 'last_id = '
-    #print last_id
+    req.write(req.args)    
+    getReqStr = req.args
+    getReqArr = getReqStr.split('&')
+    getReqDict = {}
 
-    htmlheader()
+    for item in getReqArr:
+        tempArr = item.split('=')            
+        getReqDict[tempArr[0]] = tempArr[1]
 
-    token = get_token()
+    twit_name = getReqDict['twit_name']
+    max_id = getReqDict.get('maxid', None)
 
-    #print '<h2>Your access token is {0}/h2>'.format(token)
+    if max_id is None:
+        req.write('max id is none');
 
-    for x in range(1,4):
-        last_id = get_media(twit_name, token, last_id)
+    req.write('<h1>twit_name={0}</h1>'.format(twit_name))
 
-    print '<a href="pyserver.py?max_id={0}&twit_name={1}">Next</a>'.format(last_id, twit_name)
 
-    htmlfooter()
-except:
-    cgi.print_exception()
+
+    #token = get_token()
+
+    #for x in range(1, 4):
+    #    last_id = get_media(twit_name, token, last_id)
+
+    #print '<a href="pyserver.py?max_id={0}&twit_name={1}">Next</a>'.format(last_id, twit_name)
+
+    htmlfooter(req)
+    return apache.OK
+
