@@ -1,0 +1,44 @@
+var obj = {
+	field1: "blah",
+	field2: [1,2,3],
+	field3: {
+		subfield1: "blahblah",
+		subfield2: 42,
+		subfield3: {
+			supersub: "aaaah!"
+		}
+	},
+	field4: "tots brah"
+};
+
+printObj(obj);
+
+function printObj(p, level) {
+	if (level == undefined) {
+		level = 0;
+		console.log(level);
+	}
+	for (var key in p) {
+  		if (p.hasOwnProperty(key)) {
+  			if (isObject(p[key])) {
+  				console.log(getLeading(level) + key + " -> ");
+  				printObj(p[key], level+1);
+  			}
+  			else {
+    			console.log(getLeading(level) + key + " -> " + p[key]);
+    		}
+  		}
+  	}
+}
+
+function getLeading(level) {
+	var sb = [];
+	for (var i=0; i < level; i++) {
+		sb.push('    ');
+	}
+	return sb.join('');
+}
+
+function isObject (item) {
+  return (typeof item === "object" && !Array.isArray(item) && item !== null);
+}
