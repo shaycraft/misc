@@ -11,37 +11,54 @@ var obj = {
 	field4: "tots brah"
 };
 
-printObj(obj);
+var colors = require('colors');
+var fs = require('fs');
+checkArgs(process.argv);
+var str = printObj(obj);
+fs.writeFile(process.argv[2], str, function(err) {
+	if (err) {
+		throw err;
+	}
+	console.log('Save completed.'.yellow);
+});
+
+function checkArgs(args) {
+	if (args.length != 3) {
+		var msg = 'Usage: ' + args[0] + ' <output file>';
+		console.log(msg.red);
+		throw 'Invalid arguments';
+	}
+}
 
 function printObj(p, level) {
+	var sb = [];
 	if (level == undefined) {
 		level = 0;
-		console.log(level);
 	}
 	if (!isObject(p)) {
-		console.log(getLeading(level) + p);
-		return;
+		sb.push(p);
+		return sb.join('');
 	}
 	for (var key in p) {
   		if (p.hasOwnProperty(key)) {
   			if (isObject(p[key])) {
-  				console.log(getLeading(level) + '<' + key + '>');
-  				printObj(p[key], level+1);
-  				console.log(getLeading(level) + '</' + key + '>');
+  				sb.push('<' + key + '>');
+  				sb.push(printObj(p[key], level+1));
+  				sb.push('</' + key + '>');
   			} 
   			else if (Array.isArray(p[key])) {
   				for (var i in p[key]) {
-  					console.log(getLeading(level) + '<' +  key + '>');
-  					printObj(p[key][i], level+1);
-  					console.log(getLeading(level) + '</' + key + '>');
-
+  					sb.push('<' +  key + '>');
+  					sb.push(printObj(p[key][i], level+1));
+  					sb.push('</' + key + '>');
   				}
   			}
   			else {
-    			console.log(getLeading(level) + '<' + key + '>' + p[key] + '</' + key + '>');
+    			sb.push('<' + key + '>' + p[key] + '</' + key + '>');
     		}
   		}
   	}
+  	return sb.join('');
 }
 
 function getLeading(level) {
