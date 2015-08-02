@@ -1,30 +1,22 @@
-var obj = {
-	field1: "blah",
-	field2: [1,2,3],
-	field3: {
-		subfield1: "blahblah",
-		subfield2: 42,
-		subfield3: {
-			supersub: "aaaah!"
-		}
-	},
-	field4: "tots brah"
-};
-
 var colors = require('colors');
 var fs = require('fs');
 checkArgs(process.argv);
-var str = printObj(obj);
-fs.writeFile(process.argv[2], str, function(err) {
-	if (err) {
-		throw err;
-	}
-	console.log('Save completed.'.yellow);
+
+fs.readFile(process.argv[2], function(err, data) {
+	if (err) throw err;
+	console.log('File read'.yellow);
+	var str = printObj(JSON.parse(data));
+	console.log('Data parsed.'.yellow);
+	fs.writeFile(process.argv[3], str, function(err) {
+		if (err) throw err;
+
+		console.log('Save completed'.yellow);
+	});
 });
 
 function checkArgs(args) {
-	if (args.length != 3) {
-		var msg = 'Usage: ' + args[0] + ' <output file>';
+	if (args.length != 4) {
+		var msg = 'Usage: ' + args[0] + '<input file> <output file>';
 		console.log(msg.red);
 		throw 'Invalid arguments';
 	}
