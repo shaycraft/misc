@@ -25,17 +25,20 @@ function printObj(p, level) {
 	for (var key in p) {
   		if (p.hasOwnProperty(key)) {
   			if (isObject(p[key])) {
-  				console.log(getLeading(level) + key + " -> ");
+  				console.log(getLeading(level) + '<' + key + '>');
   				printObj(p[key], level+1);
+  				console.log(getLeading(level) + '</' + key + '>');
   			} 
   			else if (Array.isArray(p[key])) {
   				for (var i in p[key]) {
-  					console.log(getLeading(level) + key);
+  					console.log(getLeading(level) + '<' +  key + '>');
   					printObj(p[key][i], level+1);
+  					console.log(getLeading(level) + '</' + key + '>');
+
   				}
   			}
   			else {
-    			console.log(getLeading(level) + key + " -> " + p[key]);
+    			console.log(getLeading(level) + '<' + key + '>' + p[key] + '</' + key + '>');
     		}
   		}
   	}
