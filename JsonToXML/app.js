@@ -18,11 +18,21 @@ function printObj(p, level) {
 		level = 0;
 		console.log(level);
 	}
+	if (!isObject(p)) {
+		console.log(getLeading(level) + p);
+		return;
+	}
 	for (var key in p) {
   		if (p.hasOwnProperty(key)) {
   			if (isObject(p[key])) {
   				console.log(getLeading(level) + key + " -> ");
   				printObj(p[key], level+1);
+  			} 
+  			else if (Array.isArray(p[key])) {
+  				for (var i in p[key]) {
+  					console.log(getLeading(level) + key);
+  					printObj(p[key][i], level+1);
+  				}
   			}
   			else {
     			console.log(getLeading(level) + key + " -> " + p[key]);
