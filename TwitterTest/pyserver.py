@@ -6,8 +6,47 @@ import urllib
 import requests
 import base64
 import json
-from mod_python import apache
+from cgi import parse_qs
 
+def form_html():
+    form = b'''
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Twitter api test</title>
+
+    </head>
+    <body>
+        <h1>Twitter API Test</h1>
+        <span id ="lblDebug" style="color: Red;"></span>
+    <form action="pyserver.py" method="get">
+        <p>Enter twitter name:
+            <input type="text" id="twit_name" name="twit_name" />
+            <input type="submit" value="submit" />
+        </p>
+        </form>
+    </body>
+    </html>
+    '''
+    return form
+    
+
+
+def application(environ, start_response):
+    status = '200 OK'
+
+    output = str(get_token())
+
+    response_headers = [('Content-type', 'text/html')]
+    start_response(status, response_headers)
+
+    d = parse_qs(environ['QUERY_STRING'])
+    twit_name = d.get('twit_name', [])
+    if not twit_name:
+        return [form_html()] 
+
+    else:
+        return [output + twit_name[0]]
 
 def htmlheader(req):
     # req.write('Content-type: text/html\n\n')
