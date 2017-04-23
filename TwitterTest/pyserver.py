@@ -47,7 +47,7 @@ def application(environ, start_response):
 
     else:
         #return [output + twit_name[0]]
-        return handler(twit_name)
+        return handler(twit_name[0])
 
 
 def htmlheader():
