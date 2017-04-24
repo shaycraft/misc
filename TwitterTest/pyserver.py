@@ -42,12 +42,16 @@ def application(environ, start_response):
 
     d = parse_qs(environ['QUERY_STRING'])
     twit_name = d.get('twit_name', [])
+    max_id = d.get('max_id', [])
     if not twit_name:
         return [form_html()] 
 
     else:
         #return [output + twit_name[0]]
-        return handler(twit_name[0])
+	if max_id is not None and len(max_id) > 0:
+            return handler(twit_name[0], max_id[0])
+	else:
+	    return handler(twit_name[0], None)
 
 
 def htmlheader():
@@ -154,15 +158,12 @@ def get_media(username, twit_token, last_id):
     return last_id, ''.join(response)
 
 
-def handler(twit_name):
+def handler(twit_name, max_id):
     response = []
     response.append(htmlheader())
 
-    max_id = None
-
     #twit_name = getreqdict['twit_name']
     #max_id = getreqdict.get('max_id', None)
-    max_id = None
     last_id = max_id
 
     token = get_token()
