@@ -6,29 +6,78 @@ import urllib
 import requests
 import base64
 import json
-from mod_python import apache
+from cgi import parse_qs
+
+def form_html():
+    form = b'''
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Twitter api test</title>
+
+    </head>
+    <body>
+        <h1>Twitter API Test</h1>
+        <span id ="lblDebug" style="color: Red;"></span>
+    <form action="/TwitterPhotoFeed/pyserver.py" method="get">
+        <p>Enter twitter name:
+            <input type="text" id="twit_name" name="twit_name" />
+            <input type="submit" value="submit" />
+        </p>
+        </form>
+    </body>
+    </html>
+    '''
+    return form
+    
 
 
-def htmlheader(req):
+def application(environ, start_response):
+    status = '200 OK'
+
+    output = str(get_token())
+
+    response_headers = [('Content-type', 'text/html')]
+    start_response(status, response_headers)
+
+    d = parse_qs(environ['QUERY_STRING'])
+    twit_name = d.get('twit_name', [])
+    max_id = d.get('max_id', [])
+    if not twit_name:
+        return [form_html()] 
+
+    else:
+        #return [output + twit_name[0]]
+	if max_id is not None and len(max_id) > 0:
+            return handler(twit_name[0], max_id[0])
+	else:
+	    return handler(twit_name[0], None)
+
+
+def htmlheader():
     # req.write('Content-type: text/html\n\n')
-    req.content_type = 'text/html'
-    req.write('<!DOCTYPE HTML>')
-    req.write('<html>')
-    req.write('<head lang="en">')
-    req.write('<meta charset="utf-8"/>')
-    req.write('<style type="text/css">')
-    req.write('.floated_img')
-    req.write('{')
-    req.write(' float: left;')
-    req.write('}')
-    req.write('</style>')
-    req.write('</head>')
-    req.write('<body>')
+    header = [];
+    #req.content_type = 'text/html'
+    header.append('<!DOCTYPE HTML>')
+    header.append('<html>')
+    header.append('<head lang="en">')
+    header.append('<meta charset="utf-8"/>')
+    header.append('<style type="text/css">')
+    header.append('.floated_img')
+    header.append('{')
+    header.append(' float: left;')
+    header.append('}')
+    header.append('</style>')
+    header.append('</head>')
+    header.append('<body>')
+    return ''.join(header)
 
 
-def htmlfooter(req):
-    req.write('</body>')
-    req.write('</html>')
+def htmlfooter():
+    footer = []
+    footer.append('</body>')
+    footer.append('</html>')
+    return ''.join(footer)
 
 
 def get_token():
@@ -73,15 +122,17 @@ def get_recursively(search_dict, field):
     return fields_found
 
 
-def render_img(req, media_url):
-    req.write('<div class="floated_img">')
-    req.write('<a href="{0}:large">'.format(media_url))
-    req.write('<img class="floated_img" src="{0}" alt="twit" height="150" width="150"></a>'.format(media_url))
-    req.write('</div>')
+def render_img(media_url):
+    req = []
+    req.append('<div class="floated_img">')
+    req.append('<a href="{0}:large">'.format(media_url))
+    req.append('<img class="floated_img" src="{0}" alt="twit" height="150" width="150"></a>'.format(media_url))
+    req.append('</div>')
+    return ''.join(req)
 
 
-def get_media(req, username, twit_token, last_id):
-
+def get_media(username, twit_token, last_id):
+    response = []
     svc_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name={0}&count=200&exclude_replies=true '.format(username)
     if last_id is not None:
         svc_url += '&max_id={0}'.format(last_id)
@@ -101,37 +152,30 @@ def get_media(req, username, twit_token, last_id):
 
                         h = 150
                         w = 150
-                        render_img(req, media_url)
+                        response.append(render_img(media_url))
                         last_id = twit_med['id']
 
-    return last_id
+    return last_id, ''.join(response)
 
 
-def handler(req):
-    htmlheader(req)
+def handler(twit_name, max_id):
+    response = []
+    response.append(htmlheader())
 
-    twit_name = ''
-    max_id = None
-
-    getreqstr = req.args
-    getreqarr = getreqstr.split('&')
-    getreqdict = {}
-
-    for item in getreqarr:
-        temparr = item.split('=')
-        getreqdict[temparr[0]] = temparr[1]
-
-    twit_name = getreqdict['twit_name']
-    max_id = getreqdict.get('max_id', None)
+    #twit_name = getreqdict['twit_name']
+    #max_id = getreqdict.get('max_id', None)
     last_id = max_id
 
     token = get_token()
 
     for x in range(1, 4):
-        last_id = get_media(req, twit_name, token, last_id)
+        #last_id = get_media(req, twit_name, token, last_id)
+        last_id, medres = get_media(twit_name, token, last_id)
+        response.append(medres)
 
-    req.write('<a href="pyserver.py?max_id={0}&twit_name={1}">Next</a>'.format(last_id, twit_name))
+    response.append('<a href="pyserver.py?max_id={0}&twit_name={1}">Next</a>'.format(last_id, twit_name))
 
-    htmlfooter(req)
-    return apache.OK
+    response.append(htmlfooter())
+    #return apache.OK
+    return ''.join(response)
 
